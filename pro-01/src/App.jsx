@@ -1,120 +1,67 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
+import Card from './components/Card'
+import axios from 'axios'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [userData,setUserData] = useState([]);
+  const [index, setIndex] = useState(1);
+
+  useEffect(function(){
+    getdata();
+  },[index])
+
+  const getdata = async()=>{
+    const response = await axios.get(`https://picsum.photos/v2/list?page=${index}&limit=21`)
+    setUserData(response.data);
+    console.log(response.data);
+  }
+
+  let printUserData = <h3 className='text-gray-400 text-xl font-medium my-20 w-full text-center'>Loading...</h3>;
+  if(userData.length > 0){ 
+    printUserData = userData.map(function(e, idx) {
+      return <div key={idx}>
+         <Card elem={e}></Card>
+      </div>   
+    })
+  }
+
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
+    <div className="bg-black min-h-screen text-white flex flex-col justify-between">
+      <p className='w-fit mx-auto bg-[#1DB954] hover:bg-[#1ed760] text-black font-bold rounded-full m-4 p-3 transition-colors'>Gallery Application</p>
+      <div className="flex flex-wrap gap-6 justify-center items-center p-4">
+          {printUserData}
+      </div>
+      <div className="flex justify-center items-center p-6 mt-auto bg-black/80 backdrop-blur-sm sticky bottom-0 w-full h-20">
+        <button className='bg-[#1DB954] hover:bg-[#1ed760] active:scale-95 text-black font-bold m-5 p-3 rounded-full transition-colors'
+        disabled={index <= 1}
+        style={{opacity: index==1? 0.7:1}}
+        onClick={()=>{
+          if(index>1){
+            setIndex(index-1);
+            setUserData([]);
+          }
+        }}
         >
-          Count is {count}
+          Prev
         </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+        <p>Page {index}</p>
+        <button className='bg-[#1DB954] hover:bg-[#1ed760] active:scale-95 text-black font-bold m-5 p-3 rounded-full transition-colors'
+        onClick={()=>{
+          setIndex(index+1);
+          setUserData([]);
+        }}
+        >
+          Next
+        </button>
+      </div>
+    </div>
     </>
   )
 }
